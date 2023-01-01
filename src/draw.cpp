@@ -12,7 +12,7 @@ void setColor(const Color& color)
 
 void setVertex(const Vec2d& u)
 {
-    glVertex2f(u.x * xRatio, u.y * yRatio);
+    glVertex2f(u.x * xRatio, -1 + u.y * yRatio);
 }
 
 void initDraw(GLFWwindow* w, const Scene& scene)
@@ -29,7 +29,7 @@ void initDraw(GLFWwindow* w, const Scene& scene)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    double min = std::min((double) width / scene.radius.x, (double) height / scene.radius.y);
+    double min = std::min((double) width / scene.size.x * 2, (double) height / scene.size.y * 2);
 
     xRatio = min / width;
     yRatio = min / height;
@@ -72,10 +72,10 @@ void drawScene(GLFWwindow* w, const Scene& scene)
     drawBackground(w, scene);
 
     setColor(Color(0.1, 0.3, 0.4));
-    drawCircle(Vec2d(0, 0), 10);
+    drawCircle(Vec2d(0, 5), 10);
 
     setColor(Color(0.8, 0, 0));
-    drawCircle(Vec2d(0, 0), 5);
+    drawCircle(Vec2d(0, 5), 5);
 
     glfwSwapBuffers(w);
 }

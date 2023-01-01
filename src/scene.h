@@ -5,6 +5,6 @@
 
 struct Scene
 {
-    Vec2d radius;
+    Vec2d size;
     Color backColor;
 };
