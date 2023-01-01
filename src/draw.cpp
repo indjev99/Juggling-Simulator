@@ -2,65 +2,80 @@
 
 #include "my_math.h"
 #include "vec2d.h"
-#include "window_size.h"
 
-const double DEG2RAD = M_PI / 180;
+double xRatio, yRatio;
 
-void initDraw(GLFWwindow* w)
+void setColor(const Color& color)
 {
-    float ratio;
+    glColor3f(color.r, color.g, color.b);
+}
+
+void setVertex(const Vec2d& u)
+{
+    glVertex2f(u.x * xRatio, u.y * yRatio);
+}
+
+void initDraw(GLFWwindow* w, const Scene& scene)
+{
     int width, height;
 
     glfwMakeContextCurrent(w);
     glfwGetFramebufferSize(w, &width, &height);
-    ratio = width / (float) height;
     glViewport(0, 0, width, height);
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+    glOrtho(-1, 1, -1, 1, 1, -1);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
+    double min = std::min((double) width / scene.radius.x, (double) height / scene.radius.y);
+
+    xRatio = min / width;
+    yRatio = min / height;
+}
+
+void drawBackground(GLFWwindow* w, const Scene& scene)
+{
+    setColor(scene.backColor);
+
+    glBegin(GL_QUADS);
+
+    glVertex2f(-1, -1);
+    glVertex2f(1, -1);
+    glVertex2f(1, 1);
+    glVertex2f(-1, 1);
+
+    glEnd();
 }
 
 void drawCircle(const Vec2d& pos, double radius)
 {
     glBegin(GL_TRIANGLES);
-    for(int i = 0; i < 360; ++i)
-    {
-        double rad = i * DEG2RAD;
-        double rad2 = (i + 1) * DEG2RAD;
 
-        glVertex2f(cos(rad) * radius + pos.x, sin(rad) * radius + pos.y);
-        glVertex2f(cos(rad2) * radius + pos.x, sin(rad2) * radius + pos.y);
-        glVertex2f(pos.x, pos.y);
+    const int N = 100;
+    for(int i = 0; i < N; ++i)
+    {
+        double curr = i * TAU / N;
+        double next = (i + 1) * TAU / N;
+
+        setVertex(pos + Vec2d::fromPolar(curr, radius));
+        setVertex(pos + Vec2d::fromPolar(next, radius));
+        setVertex(pos);
     }
     glEnd();
 }
 
-void drawBackground(GLFWwindow* w)
+void drawScene(GLFWwindow* w, const Scene& scene)
 {
-    double widthHeightRatio = 1.0 * windowWidth / windowHeight;
+    initDraw(w, scene);
+    drawBackground(w, scene);
 
-    glColor3f(1, 1, 1);
+    setColor(Color(0.1, 0.3, 0.4));
+    drawCircle(Vec2d(0, 0), 10);
 
-    glBegin(GL_QUADS);
-
-    glVertex2f(-1.0 * widthHeightRatio, -1.0);
-    glVertex2f(1.0 * widthHeightRatio, -1.0);
-    glVertex2f(1.0 * widthHeightRatio, 1.0);
-    glVertex2f(-1.0 * widthHeightRatio, 1.0);
-
-    glEnd();
-}
-
-void drawScene(GLFWwindow* w)
-{
-    initDraw(w);
-    drawBackground(w);
-
-    glColor3f(1, 0, 0);
-    drawCircle(Vec2d(0, 0), 0.5);
+    setColor(Color(0.8, 0, 0));
+    drawCircle(Vec2d(0, 0), 5);
 
     glfwSwapBuffers(w);
 }

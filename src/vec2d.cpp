@@ -79,9 +79,9 @@ double Vec2d::cross(const Vec2d& u, const Vec2d& v)
     return u.x * v.x + u.y * v.y;
 }
 
-Vec2d Vec2d::fromAngle(double a)
+Vec2d Vec2d::fromPolar(double a, double d)
 {
-    return Vec2d(1, 0).rotated(a);
+    return Vec2d(d, 0).rotated(a);
 }
 
 Vec2d operator+(const Vec2d& u)

@@ -1,14 +1,8 @@
 #include "window_functions.h"
 
-#include "window_size.h"
-
-#include <glfw3.h>
 #include <iostream>
 
 const int START_WINDOW_SIZE = 720;
-
-int windowWidth = START_WINDOW_SIZE;
-int windowHeight = START_WINDOW_SIZE;
 
 void errorCallback(int error, const char* description)
 {
@@ -27,12 +21,6 @@ void mousePositionCallback(GLFWwindow* window, double xpos, double ypos)
 {
 }
 
-void windowSizeCallback(GLFWwindow* window, int width, int height)
-{
-    windowWidth = width;
-    windowHeight = height;
-}
-
 bool setErrorCallback()
 {
     glfwSetErrorCallback(errorCallback);
@@ -46,7 +34,7 @@ bool initializeGLFW()
 
 bool createWindow(GLFWwindow*& w)
 {
-    w = glfwCreateWindow(windowWidth, windowHeight, "Juggling Simulator", NULL, NULL);
+    w = glfwCreateWindow(START_WINDOW_SIZE, START_WINDOW_SIZE, "Juggling Simulator", NULL, NULL);
     return w != nullptr;
 }
 
@@ -55,7 +43,6 @@ bool setWindowCallbacks(GLFWwindow* w)
     glfwSetKeyCallback(w, keyCallback);
     glfwSetMouseButtonCallback(w, mouseButtonCallback);
     glfwSetCursorPosCallback(w, mousePositionCallback);
-    glfwSetWindowSizeCallback(w, windowSizeCallback);
     return true;
 }
 

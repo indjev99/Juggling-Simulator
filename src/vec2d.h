@@ -29,7 +29,7 @@ struct Vec2d
     static double dot(const Vec2d& u, const Vec2d& v);
     static double cross(const Vec2d& u, const Vec2d& v);
 
-    static Vec2d fromAngle(double a);
+    static Vec2d fromPolar(double a, double d);
 
     double x, y;
 };
