@@ -74,26 +74,20 @@ void run(GLFWwindow* window)
     double dt = 1 / STEPS_PER_SEC;
     double fps = INITIAL_FPS;
 
-    double start = glfwGetTime();
     double nextTime = 0;
 
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
 
-        double time = glfwGetTime() - start;
-
-        if (time >= nextTime)
+        double time = glfwGetTime();
+        drawScene(window, scene);
+        nextTime += 1 / fps;
+        while (scene.getTime() + dt / 2 < nextTime / slowmo)
         {
-            drawScene(window, scene);
-            nextTime += 1 / fps;
-            while (scene.getTime() + dt / 2 < nextTime / slowmo)
-            {
-                scene.step(dt);
-            }
-            double frameTime = glfwGetTime() - start - time;
-            while (fps > 1 && 1 / frameTime < fps) --fps;
-            while (1 / frameTime > fps + 5) ++fps;
+            scene.step(dt);
         }
+        double frameTime = glfwGetTime() - time;
+        fps = 1 / frameTime;
     }
 }
