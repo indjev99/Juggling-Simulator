@@ -1,9 +1,8 @@
 #include "draw.h"
 
 #include "my_math.h"
-#include "vec2d.h"
 
-double xRatio, yRatio;
+static double xRatio, yRatio;
 
 void setColor(const Color& color)
 {
@@ -49,8 +48,10 @@ void drawBackground(GLFWwindow* w, const Scene& scene)
     glEnd();
 }
 
-void drawCircle(const Vec2d& pos, double radius)
+void drawBall(const Ball& ball)
 {
+    setColor(ball.col);
+
     glBegin(GL_TRIANGLES);
 
     const int N = 100;
@@ -59,10 +60,11 @@ void drawCircle(const Vec2d& pos, double radius)
         double curr = i * TAU / N;
         double next = (i + 1) * TAU / N;
 
-        setVertex(pos + Vec2d::fromPolar(curr, radius));
-        setVertex(pos + Vec2d::fromPolar(next, radius));
-        setVertex(pos);
+        setVertex(ball.pos + Vec2d::fromPolar(curr, ball.rad));
+        setVertex(ball.pos + Vec2d::fromPolar(next, ball.rad));
+        setVertex(ball.pos);
     }
+
     glEnd();
 }
 
@@ -71,11 +73,10 @@ void drawScene(GLFWwindow* w, const Scene& scene)
     initDraw(w, scene);
     drawBackground(w, scene);
 
-    setColor(Color(0.1, 0.3, 0.4));
-    drawCircle(Vec2d(0, 5), 10);
-
-    setColor(Color(0.8, 0, 0));
-    drawCircle(Vec2d(0, 5), 5);
+    for (const Ball& ball : scene.balls)
+    {
+        drawBall(ball);
+    }
 
     glfwSwapBuffers(w);
 }

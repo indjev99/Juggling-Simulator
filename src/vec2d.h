@@ -9,10 +9,6 @@ struct Vec2d
     Vec2d():
         Vec2d(0, 0) {}
 
-    Vec2d(const Vec2d& other) = default;
-
-    Vec2d& operator=(const Vec2d& other) = default;
-
     double length() const;
 
     void negate();
