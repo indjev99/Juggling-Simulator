@@ -69,7 +69,7 @@ void run(GLFWwindow* window)
 
     std::cin >> balls >> reverse >> airTime >> holdTime >> slowmo;
 
-    Scene scene = setupScene(balls, airTime, holdTime);
+    Scene scene = setupScene(balls, airTime, holdTime, reverse);
 
     double dt = 1 / STEPS_PER_SEC;
     double fps = INITIAL_FPS;
