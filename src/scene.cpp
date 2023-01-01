@@ -64,7 +64,7 @@ void Scene::step(double dt)
         while (!ball.moves.empty() && ball.moves.front().t < t + EPS)
         {
             std::cout.precision(2);
-            if (ball.moves.front().type == Move::Catch) std::cerr << "Catch " << ball.moves.front().t << std::endl;
+            if (ball.moves.front().type == Move::Catch) std::cerr << "Catch " << ball.moves.front().t << " " << ball.moves.front().pos << std::endl;
             else std::cerr << "Throw " << ball.moves.front().t << " " << ball.moves.front().pos << " " << ball.moves.front().vel << std::endl;
 
             if (ball.moves.front().type == Move::Throw) ball.inHand = false;
@@ -78,7 +78,7 @@ void Scene::step(double dt)
         }
         else if (ball.moves.empty())
         {
-            acc = -20 * ball.vel;
+            acc = -50 * ball.vel;
         }
         else
         {
@@ -112,20 +112,28 @@ int Scene::addBall(double rad, const Color& col)
     return balls.size() - 1;
 }
 
-void Scene::addCatch(int id, double time)
+void Scene::addThrowCatch(int id, double throwTime, const Vec2d& throwPos, double catchTime, const Vec2d& catchPos)
 {
-    Ball& ball = balls[id];
-    if (ball.moves.empty()) assert(!ball.inHand && time >= t);
-    else assert(ball.moves.back().type == Move::Throw && time >= ball.moves.back().t);
-    ball.moves.emplace_back(Move::Catch, time);
+    assert(catchTime > throwTime);
+    double flightTime = (catchTime - throwTime);
+    Vec2d avgVel = (catchPos - throwPos) / flightTime;
+    Vec2d throwVel = avgVel - g * flightTime / 2;
+    addThrow(id, throwTime, throwPos, throwVel);
+    addCatch(id, catchTime, catchPos);
 }
 
 void Scene::addThrow(int id, double time, const Vec2d& pos, const Vec2d& vel)
 {
     Ball& ball = balls[id];
-    if (ball.moves.empty()) assert(ball.inHand && time >= t);
-    else assert(ball.moves.back().type == Move::Catch && time >= ball.moves.back().t);
-    ball.moves.emplace_back(Move::Throw, time);
-    ball.moves.back().pos = pos;
-    ball.moves.back().vel = vel;
+    if (ball.moves.empty()) assert(ball.inHand && time > t);
+    else assert(ball.moves.back().type == Move::Catch && time > ball.moves.back().t);
+    ball.moves.emplace_back(Move::Throw, time, pos, vel);
+}
+
+void Scene::addCatch(int id, double time, const Vec2d& pos)
+{
+    Ball& ball = balls[id];
+    if (ball.moves.empty()) assert(!ball.inHand && time > t);
+    else assert(ball.moves.back().type == Move::Throw && time > ball.moves.back().t);
+    ball.moves.emplace_back(Move::Catch, time, pos);
 }

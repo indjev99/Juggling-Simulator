@@ -8,9 +8,17 @@ struct Move
         Throw
     };
 
-    Move(Type type, double t):
+    Move(Type type, double t, const Vec2d& pos, const Vec2d& vel):
         type(type),
-        t(t) {}
+        t(t),
+        pos(pos),
+        vel(vel) {}
+
+    Move(Type type, double t, const Vec2d& pos):
+        Move(type, t, pos, Vec2d()) {}
+
+    Move(Type type, double t):
+        Move(type, t, Vec2d(), Vec2d()) {}
 
     Type type;
 

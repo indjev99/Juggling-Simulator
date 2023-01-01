@@ -25,10 +25,12 @@ struct Scene
 
     int addBall(double rad, const Color& col);
 
-    void addCatch(int id, double time);
-    void addThrow(int id, double time, const Vec2d& pos, const Vec2d& vel);
+    void addThrowCatch(int id, double throwTime, const Vec2d& throwPos, double catchTime, const Vec2d& catchPos);
 
 private:
+
+    void addThrow(int id, double time, const Vec2d& pos, const Vec2d& vel);
+    void addCatch(int id, double time, const Vec2d& pos);
 
     void bounceOff(Ball& ball, const Vec2d& acc);
 
