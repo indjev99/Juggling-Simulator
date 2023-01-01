@@ -5,27 +5,23 @@
 
 #include <iostream>
 
-const double STEPS_PER_SEC = 60;
+const double STEPS_PER_SEC = 120;
 const double INITIAL_FPS = 60;
+const double SLOWMO = 1;
 
 void run(GLFWwindow* window)
 {
     Scene scene(Vec2d(2, 3), Color(0.65, 0.65, 0.65));
 
-    scene.g = Vec2d(0, -10);
+    scene.setG(Vec2d(0, -10));
 
-    scene.balls.emplace_back(0.05, Color(1, 0, 0));
-    scene.balls.emplace_back(0.05, Color(0, 1, 0));
-    scene.balls.emplace_back(0.05, Color(0, 0, 1));
+    int redBall = scene.addBall(0.05, Color(1, 0, 0));
 
-    scene.balls[0].pos = Vec2d(0.3, 1.2);
-    scene.balls[0].vel = Vec2d(-0.3, 4.2);
-
-    scene.balls[1].pos = Vec2d(-0.05, 1.9);
-    scene.balls[1].vel = Vec2d(-1.2, 0.8);
-
-    scene.balls[2].pos = Vec2d(-0.33, 1.1);
-    scene.balls[2].vel = Vec2d(0.7, -4.4);
+    for (int i = 0; i < 10; ++i)
+    {
+        scene.addThrow(redBall, 1 + i * 1.5, Vec2d(0.4, 1.5), Vec2d(-0.8, 5));
+        scene.addCatch(redBall, 2 + i * 1.5);
+    }
 
     double dt = 1 / STEPS_PER_SEC;
     double fps = INITIAL_FPS;
@@ -43,7 +39,7 @@ void run(GLFWwindow* window)
         {
             drawScene(window, scene);
             nextTime += 1 / fps;
-            while (scene.t + dt / 2 < nextTime)
+            while (scene.getTime() + dt / 2 < nextTime / SLOWMO)
             {
                 scene.step(dt);
             }

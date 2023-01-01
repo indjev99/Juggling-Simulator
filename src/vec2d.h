@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ostream>
+
 struct Vec2d
 {
     Vec2d(double x, double y):
@@ -36,7 +38,6 @@ struct Vec2d
 
     static Vec2d fromPolar(double a, double d);
 
-
     double x, y;
 };
 
@@ -51,6 +52,8 @@ Vec2d& operator+=(Vec2d& u, const Vec2d& v);
 Vec2d& operator-=(Vec2d& u, const Vec2d& v);
 Vec2d& operator*=(Vec2d& u, double s);
 Vec2d& operator/=(Vec2d& u, double s);
+
+std::ostream& operator<<(std::ostream& out, const Vec2d& u);
 
 template <class F>
 void Vec2d::apply(F f)

@@ -10,20 +10,31 @@ struct Scene
 {
     Scene(const Vec2d size, const Color backColor):
         size(size),
-        backColor(backColor) {}
-
-    void step(double dt);
+        backColor(backColor),
+        t(0) {}
 
     Vec2d size;
     Color backColor;
 
-    Vec2d g;
+    double getTime() const;
+    const std::vector<Ball>& getBalls() const;
 
-    std::vector<Ball> balls;
+    void step(double dt);
 
-    double t;
+    void setG(const Vec2d& g);
+
+    int addBall(double rad, const Color& col);
+
+    void addCatch(int id, double time);
+    void addThrow(int id, double time, const Vec2d& pos, const Vec2d& vel);
 
 private:
 
     void bounceOff(Ball& ball, const Vec2d& acc);
+
+    Vec2d g;
+
+    double t;
+
+    std::vector<Ball> balls;
 };

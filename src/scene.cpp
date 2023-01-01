@@ -2,6 +2,18 @@
 
 #include "my_math.h"
 
+#include <cassert>
+
+double Scene::getTime() const
+{
+    return t;
+}
+
+const std::vector<Ball>& Scene::getBalls() const
+{
+    return balls;
+}
+
 void Scene::bounceOff(Ball& ball, const Vec2d& acc)
 {
     Vec2d oldPotential = -ball.pos.pointwise(acc);
@@ -40,17 +52,80 @@ void Scene::bounceOff(Ball& ball, const Vec2d& acc)
     }
 }
 
+#include <iostream>
+
 void Scene::step(double dt)
 {
     for (Ball& ball : balls)
     {
-        Vec2d acc = g;
+        Vec2d acc;
+        Vec2d jrk;
 
-        ball.pos += ball.vel * dt + acc * dt * dt / 2;
-        ball.vel += acc * dt;
+        while (!ball.moves.empty() && ball.moves.front().t < t + EPS)
+        {
+            std::cout.precision(2);
+            if (ball.moves.front().type == Move::Catch) std::cerr << "Catch " << ball.moves.front().t << std::endl;
+            else std::cerr << "Throw " << ball.moves.front().t << " " << ball.moves.front().pos << " " << ball.moves.front().vel << std::endl;
+
+            if (ball.moves.front().type == Move::Throw) ball.inHand = false;
+            else if (ball.moves.front().type == Move::Catch) ball.inHand = true;
+            ball.moves.pop_front();
+        }
+
+        if (!ball.inHand)
+        {
+            acc = g;
+        }
+        else if (ball.moves.empty())
+        {
+            acc = -20 * ball.vel;
+        }
+        else
+        {
+            const Move& nextThrow = ball.moves.front();
+            double timeLeft = nextThrow.t - t;
+            Vec2d avgVel = (nextThrow.pos - ball.pos) / timeLeft;
+            Vec2d avgAcc = (nextThrow.vel - ball.vel) / timeLeft;
+            acc = 6 * (avgVel - ball.vel) / timeLeft - 2 * avgAcc;
+            jrk = 2 * (avgAcc - acc) / timeLeft;
+        }
+
+        ball.pos += ball.vel * dt + acc * dt * dt / 2 + jrk * dt * dt * dt / 6;
+        ball.vel += acc * dt + jrk * dt * dt / 2;
 
         bounceOff(ball, acc);
     }
 
     t += dt;
+}
+
+void Scene::setG(const Vec2d& g)
+{
+    this->g = g;
+}
+
+int Scene::addBall(double rad, const Color& col)
+{
+    balls.emplace_back(rad, col);
+    balls.back().pos = Vec2d(0, rad);
+    balls.back().inHand = true;
+    return balls.size() - 1;
+}
+
+void Scene::addCatch(int id, double time)
+{
+    Ball& ball = balls[id];
+    if (ball.moves.empty()) assert(!ball.inHand && time >= t);
+    else assert(ball.moves.back().type == Move::Throw && time >= ball.moves.back().t);
+    ball.moves.emplace_back(Move::Catch, time);
+}
+
+void Scene::addThrow(int id, double time, const Vec2d& pos, const Vec2d& vel)
+{
+    Ball& ball = balls[id];
+    if (ball.moves.empty()) assert(ball.inHand && time >= t);
+    else assert(ball.moves.back().type == Move::Catch && time >= ball.moves.back().t);
+    ball.moves.emplace_back(Move::Throw, time);
+    ball.moves.back().pos = pos;
+    ball.moves.back().vel = vel;
 }

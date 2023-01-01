@@ -163,3 +163,9 @@ Vec2d& operator/=(Vec2d& u, double s)
 {
     return u *= 1 / s;
 }
+
+std::ostream& operator<<(std::ostream& out, const Vec2d& u)
+{
+    out << "[" << u.x << " " << u.y << "]";
+    return out;
+}

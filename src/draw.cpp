@@ -73,7 +73,7 @@ void drawScene(GLFWwindow* w, const Scene& scene)
     initDraw(w, scene);
     drawBackground(w, scene);
 
-    for (const Ball& ball : scene.balls)
+    for (const Ball& ball : scene.getBalls())
     {
         drawBall(ball);
     }

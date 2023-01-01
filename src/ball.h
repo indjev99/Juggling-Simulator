@@ -1,7 +1,10 @@
 #pragma once
 
 #include "color.h"
+#include "move.h"
 #include "vec2d.h"
+
+#include <deque>
 
 struct Ball
 {
@@ -14,4 +17,7 @@ struct Ball
 
     Vec2d pos;
     Vec2d vel;
+
+    bool inHand;
+    std::deque<Move> moves;
 };

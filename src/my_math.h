@@ -5,5 +5,6 @@
 #include <cmath>
 
 #define TAU 2 * M_PI
+#define EPS 1e-6
 
 double sign(double x);
