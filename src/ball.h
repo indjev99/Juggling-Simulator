@@ -13,5 +13,5 @@ struct Ball
     Color col;
 
     Vec2d pos;
-    Vec2d speed;
+    Vec2d vel;
 };

@@ -12,8 +12,14 @@ struct Scene
         size(size),
         backColor(backColor) {}
 
+    void step(double dt);
+
     Vec2d size;
     Color backColor;
 
+    Vec2d g;
+
     std::vector<Ball> balls;
+
+    double t;
 };

@@ -2,7 +2,8 @@
 
 #include <iostream>
 
-const int START_WINDOW_SIZE = 720;
+const int START_WIDTH = 480;
+const int START_HEIGHT = 720;
 
 void errorCallback(int error, const char* description)
 {
@@ -34,7 +35,7 @@ bool initializeGLFW()
 
 bool createWindow(GLFWwindow*& w)
 {
-    w = glfwCreateWindow(START_WINDOW_SIZE, START_WINDOW_SIZE, "Juggling Simulator", NULL, NULL);
+    w = glfwCreateWindow(START_WIDTH, START_HEIGHT, "Juggling Simulator", NULL, NULL);
     return w != nullptr;
 }
 
