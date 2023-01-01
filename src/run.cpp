@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-const double STEPS_PER_SEC = 120;
+const double STEPS_PER_SEC = 1000;
 const double INITIAL_FPS = 60;
 
 const std::vector<Color> colors = {
@@ -14,7 +14,13 @@ const std::vector<Color> colors = {
     Color(0, 0, 1),
     Color(1, 1, 0),
     Color(1, 0, 1),
-    Color(0, 1, 1)
+    Color(0, 1, 1),
+    Color(1, 0.5, 0),
+    Color(0.5, 0, 1),
+    Color(0, 1, 0.5),
+    Color(0.5, 1, 0),
+    Color(1, 0, 0.5),
+    Color(0, 0.5, 1)
 };
 
 Scene setupScene(int balls, double airTime, double holdTime, bool reverse = false, int throws = 10000)
@@ -27,10 +33,14 @@ Scene setupScene(int balls, double airTime, double holdTime, bool reverse = fals
     double cycleTime = airTime + holdTime;
     double beatTime = cycleTime / balls;
 
-    Vec2d rInPos(0.1, 1.2);
-    Vec2d lInPos(-0.1, 1.2);
-    Vec2d rOutPos(0.25, 1.2);
-    Vec2d lOutPos(-0.25, 1.2);
+    double inX = balls % 2 ? 0.1 : 0.075;
+    double outX = balls % 2 ? 0.25 : 0.3;
+    double handY = 1.2;
+
+    Vec2d rInPos(inX, handY);
+    Vec2d lInPos(-inX, handY);
+    Vec2d rOutPos(outX, handY);
+    Vec2d lOutPos(-outX, handY);
 
     Vec2d rlInOutPos[2][2] = {
         {rInPos, rOutPos},

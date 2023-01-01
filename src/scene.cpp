@@ -52,7 +52,7 @@ void Scene::bounceOff(Ball& ball, const Vec2d& acc)
     }
 }
 
-#include <iostream>
+// #include <iostream>
 
 void Scene::step(double dt)
 {
@@ -63,9 +63,10 @@ void Scene::step(double dt)
 
         while (!ball.moves.empty() && ball.moves.front().t < t + EPS)
         {
-            std::cout.precision(2);
-            if (ball.moves.front().type == Move::Catch) std::cerr << "Catch " << ball.moves.front().t << " " << ball.moves.front().pos << std::endl;
-            else std::cerr << "Throw " << ball.moves.front().t << " " << ball.moves.front().pos << " " << ball.moves.front().vel << std::endl;
+            // std::cout.precision(2);
+            // if (ball.moves.front().type == Move::Catch) std::cerr << "Catch " << ball.moves.front().t << " " << ball.moves.front().pos << std::endl;
+            // else std::cerr << "Throw " << ball.moves.front().t << " " << ball.moves.front().pos << " " << ball.moves.front().vel << std::endl;
+            // std::cerr << ball.pos << " " << ball.vel << std::endl;
 
             if (ball.moves.front().type == Move::Throw) ball.inHand = false;
             else if (ball.moves.front().type == Move::Catch) ball.inHand = true;
