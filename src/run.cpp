@@ -75,9 +75,9 @@ void run(GLFWwindow* window)
     bool reverse;
     double airTime;
     double holdTime;
-    double slowmo;
+    double playSpeed;
 
-    std::cin >> balls >> reverse >> airTime >> holdTime >> slowmo;
+    std::cin >> balls >> reverse >> airTime >> holdTime >> playSpeed;
 
     Scene scene = setupScene(balls, airTime, holdTime, reverse);
 
@@ -93,7 +93,7 @@ void run(GLFWwindow* window)
         double time = glfwGetTime();
         drawScene(window, scene);
         nextTime += 1 / fps;
-        while (scene.getTime() + dt / 2 < nextTime / slowmo)
+        while (scene.getTime() + dt / 2 < nextTime * playSpeed)
         {
             scene.step(dt);
         }
