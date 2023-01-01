@@ -2,9 +2,19 @@
 
 #include "my_math.h"
 
+double Vec2d::lengthSq() const
+{
+    return dot(*this);
+}
+
 double Vec2d::length() const
 {
-    return sqrt(dot(*this, *this));
+    return sqrt(lengthSq());
+}
+
+double Vec2d::sum() const
+{
+    return x + y;
 }
 
 void Vec2d::negate()
@@ -69,14 +79,19 @@ Vec2d Vec2d::perpedNeg() const
     return w;
 }
 
-double Vec2d::dot(const Vec2d& u, const Vec2d& v)
+double Vec2d::dot(const Vec2d& v) const
 {
-    return u.x * v.x + u.y * v.y;
+    return x * v.x + y * v.y;
 }
 
-double Vec2d::cross(const Vec2d& u, const Vec2d& v)
+double Vec2d::cross(const Vec2d& v) const
 {
-    return u.x * v.x + u.y * v.y;
+    return x * v.y - y * v.x;
+}
+
+Vec2d Vec2d::pointwise(const Vec2d& v) const
+{
+    return Vec2d(x * v.x, y * v.y);
 }
 
 Vec2d Vec2d::fromPolar(double a, double d)
@@ -93,7 +108,7 @@ Vec2d operator-(const Vec2d& u)
 {
     Vec2d w(u);
     w.negate();
-    return u;
+    return w;
 }
 
 Vec2d operator+(const Vec2d& u, const Vec2d& v)

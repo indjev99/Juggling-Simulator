@@ -5,3 +5,5 @@
 #include <cmath>
 
 #define TAU 2 * M_PI
+
+double sign(double x);

@@ -22,4 +22,8 @@ struct Scene
     std::vector<Ball> balls;
 
     double t;
+
+private:
+
+    void bounceOff(Ball& ball, const Vec2d& acc);
 };

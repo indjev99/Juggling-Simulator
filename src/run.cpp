@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-const double STEPS_PER_SEC = 1000;
+const double STEPS_PER_SEC = 60;
 const double INITIAL_FPS = 60;
 
 void run(GLFWwindow* window)
@@ -50,7 +50,6 @@ void run(GLFWwindow* window)
             double frameTime = glfwGetTime() - start - time;
             while (fps > 1 && 1 / frameTime < fps) --fps;
             while (1 / frameTime > fps + 5) ++fps;
-            std::cerr << fps << " : " << 1 / frameTime << std::endl;
         }
     }
 }
