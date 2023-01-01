@@ -1,6 +1,6 @@
 #include "vec2d.h"
 
-#include <cmath>
+#include "my_math.h"
 
 double Vec2d::length() const
 {

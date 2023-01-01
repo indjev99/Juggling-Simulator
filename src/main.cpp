@@ -1,5 +1,5 @@
-#include "window_functions.h"
 #include "run.h"
+#include "window_functions.h"
 
 #include <iostream>
 

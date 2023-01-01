@@ -1,8 +1,9 @@
 #include "window_functions.h"
+
 #include "window_size.h"
 
-#include <iostream>
 #include <glfw3.h>
+#include <iostream>
 
 const int START_WINDOW_SIZE = 720;
 

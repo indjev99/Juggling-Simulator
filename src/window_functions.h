@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <glfw3.h>
 
 bool setErrorCallback();
