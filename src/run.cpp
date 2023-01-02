@@ -162,7 +162,7 @@ std::vector<int> parseSiteswap(const std::string& siteswapStr)
     {
         assert(isdigit(c) || islower(c));
         if (isdigit(c)) siteswap.push_back(c - '0');
-        else if (islower(c)) siteswap.push_back(c - 'a');
+        else if (islower(c)) siteswap.push_back(c - 'a' + 10);
     }
     return siteswap;
 }
