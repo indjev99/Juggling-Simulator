@@ -8,9 +8,11 @@
 
 struct Ball
 {
-    Ball(double rad, const Color& col):
+    Ball(double rad, const Color& col, const Vec2d& pos):
         rad(rad),
-        col(col) {}
+        col(col),
+        pos(pos),
+        inHand(false) {}
 
     double rad;
     Color col;

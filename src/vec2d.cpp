@@ -99,6 +99,16 @@ Vec2d Vec2d::fromPolar(double a, double d)
     return Vec2d(d, 0).rotated(a);
 }
 
+bool operator==(const Vec2d& u, const Vec2d& v)
+{
+    return u.x == v.x && u.y == v.y;
+}
+
+bool operator!=(const Vec2d& u, const Vec2d& v)
+{
+    return !(u == v);
+}
+
 Vec2d operator+(const Vec2d& u)
 {
     return u;

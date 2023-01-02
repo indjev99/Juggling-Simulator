@@ -105,10 +105,9 @@ void Scene::setG(const Vec2d& g)
     this->g = g;
 }
 
-int Scene::addBall(double rad, const Color& col)
+int Scene::addBall(double rad, const Color& col, const Vec2d& pos)
 {
-    balls.emplace_back(rad, col);
-    balls.back().pos = Vec2d(0, rad);
+    balls.emplace_back(rad, col, pos);
     balls.back().inHand = true;
     return balls.size() - 1;
 }

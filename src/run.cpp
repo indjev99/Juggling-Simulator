@@ -1,9 +1,13 @@
 #include "run.h"
 
 #include "draw.h"
+#include "my_math.h"
+#include "pattern.h"
 #include "scene.h"
 
+#include <cassert>
 #include <iostream>
+#include <vector>
 
 const double STEPS_PER_SEC = 1000;
 const double INITIAL_FPS = 60;
@@ -23,63 +27,162 @@ const std::vector<Color> colors = {
     Color(0, 0.5, 1)
 };
 
-Scene setupScene(int balls, double airTime, double holdTime, bool reverse = false, int throws = 10000)
+#define NOBALL -1
+
+void juggle(Scene& scene, const Pattern& pattern, int throws = 10000)
 {
-    Scene scene(Vec2d(2, 3), Color(0.65, 0.65, 0.65));
+    int maxBeats = 0;
 
-    scene.setG(Vec2d(0, -9.8));
+    for (int i = 0; i < (int) pattern.size(); ++i)
+    {
+        const PatternElem& curr = pattern[i];
+        const PatternElem& prev = pattern[(i + pattern.size() - 1) % pattern.size()];
 
-    double startTime = 0.5;
-    double cycleTime = airTime + holdTime;
-    double beatTime = cycleTime / balls;
+        assert(curr.beats >= 0);
 
-    double inX = balls % 2 ? 0.1 : 0.075;
-    double outX = balls % 2 ? 0.25 : 0.3;
-    double handY = 1.2;
+        maxBeats = std::max(maxBeats, curr.beats);
 
-    Vec2d rInPos(inX, handY);
-    Vec2d lInPos(-inX, handY);
-    Vec2d rOutPos(outX, handY);
-    Vec2d lOutPos(-outX, handY);
+        if (curr.beats == 0)
+        {
+            assert(curr.beatTime >= 0);
+            assert(curr.holdTime == 0);
+        }
+        else if (curr.beats == 1)
+        {
+            assert(curr.beatTime > 0);
+            assert(curr.holdTime > 0);
+            assert(curr.holdTime <= curr.beatTime);
+        }
+        else if (curr.beats == 2)
+        {
+            assert(curr.beatTime >= 0);
+            assert(curr.holdTime >= 0);
+            assert(curr.holdTime < curr.beatTime + prev.beatTime);
 
-    Vec2d rlInOutPos[2][2] = {
-        {rInPos, rOutPos},
-        {lInPos, lOutPos}
+            if (curr.holdTime == 0)
+            {
+                const PatternElem& next = pattern[(i + curr.beats) % pattern.size()];
+                assert(curr.catchPos == next.catchPos);
+                assert(curr.throwPos == next.throwPos);
+            }
+        }
+        else
+        {
+            assert(curr.beatTime > 0);
+            assert(curr.holdTime > 0);
+            assert(curr.holdTime < curr.beatTime + prev.beatTime);
+        }
+    }
+
+    double startTime = 0.1;
+
+    Vec2d handMults[2] = {
+        Vec2d(1, 1),
+        Vec2d(-1, 1)
     };
 
-    for (int i = 0; i < balls; ++i)
+    std::vector<int> beatBalls;
+    std::vector<double> beatTimes = {startTime};
+
+    for (int i = 0; i < throws + maxBeats; ++i)
     {
-        scene.addBall(0.05, colors[i % colors.size()]);     
+        const PatternElem& curr = pattern[i % pattern.size()];
+
+        beatTimes.push_back(beatTimes.back() + curr.beatTime);
+
+        int land = i + curr.beats;
+
+        if ((int) beatBalls.size() <= land) beatBalls.resize(land + 1, NOBALL);
+
+        assert(beatBalls[land] == NOBALL);
+        if (curr.beats != 0 && beatBalls[i] == NOBALL)
+        {
+            beatBalls[i] = scene.addBall(0.05, colors[scene.getBalls().size() % colors.size()], curr.catchPos.pointwise(handMults[i % 2]));
+        }
+
+        beatBalls[land] = beatBalls[i]; 
     }
+
+    beatTimes.erase(beatTimes.begin());
 
     for (int i = 0; i < throws; ++i)
     {
-        int ball = i % balls;
+        const PatternElem& curr = pattern[i % pattern.size()];
+
+        if (curr.beats == 0) continue;
+        if (curr.beats == 2 && curr.holdTime == 0) continue;
+
+        int land = i + curr.beats;
+        const PatternElem& next = pattern[land % pattern.size()];
+
         int throwHand = i % 2;
-        int catchHand = (i + balls) % 2;
-        int throwIO = 0 ^ reverse;
-        int catchIO = 1 ^ reverse;
-        const Vec2d& throwPos = rlInOutPos[throwHand][throwIO];
-        const Vec2d& catchPos = rlInOutPos[catchHand][catchIO];
-        double throwTime = startTime + i * beatTime + holdTime;
-        double catchTime = startTime + i * beatTime + cycleTime;
-        scene.addThrowCatch(ball, throwTime, throwPos, catchTime, catchPos);
+        int catchHand = land % 2;
+        Vec2d throwPos = curr.throwPos.pointwise(handMults[throwHand]);
+        Vec2d catchPos = next.catchPos.pointwise(handMults[catchHand]);
+        double throwTime = beatTimes[i];
+        double catchTime = beatTimes[land] - next.holdTime;
+
+        // std::cerr << beatBalls[i] << " : " << throwTime << " " << catchTime << " = " << beatTimes[land] << " - " << next.holdTime << std::endl;
+
+        scene.addThrowCatch(beatBalls[i], throwTime, throwPos, catchTime, catchPos);
+    }
+}
+
+Pattern makePattern(const std::vector<int>& siteswap, double beatTime, double holdTime)
+{
+    assert(holdTime < 2 * beatTime);
+
+    Pattern pattern(siteswap.size());
+
+    double inX = 0.085;
+    double outX = 0.275;
+    double handY = 1.2;
+
+    Vec2d rInPos(inX, handY);
+    Vec2d rOutPos(outX, handY);
+
+    for (int i = 0; i < (int) pattern.size(); ++i)
+    {
+        pattern[i].beats = siteswap[i];
+        pattern[i].beatTime = beatTime;
+        if (pattern[i].beats == 0) pattern[i].holdTime = 0;
+        else if (pattern[i].beats == 2) pattern[i].holdTime = 0;
+        else pattern[i].holdTime = holdTime;
+        pattern[i].throwPos = rInPos;
+        pattern[i].catchPos = rOutPos;
     }
 
-    return scene;
+    return pattern;
+}
+
+std::vector<int> parseSiteswap(const std::string& siteswapStr)
+{
+    std::vector<int> siteswap;
+    for (char c : siteswapStr)
+    {
+        assert(isdigit(c) || islower(c));
+        if (isdigit(c)) siteswap.push_back(c - '0');
+        else if (islower(c)) siteswap.push_back(c - 'a');
+    }
+    return siteswap;
 }
 
 void run(GLFWwindow* window)
 {
-    int balls;
-    bool reverse;
-    double airTime;
+    std::string siteswapStr;
+    double beatTime;
     double holdTime;
     double playSpeed;
 
-    std::cin >> balls >> reverse >> airTime >> holdTime >> playSpeed;
+    std::cin >> siteswapStr >> beatTime >> holdTime >> playSpeed;
+    std::vector<int> siteswap = parseSiteswap(siteswapStr);
 
-    Scene scene = setupScene(balls, airTime, holdTime, reverse);
+    Scene scene(Vec2d(2, 3), Color(0.65, 0.65, 0.65));
+    scene.setG(Vec2d(0, -9.8));
+
+    Pattern pattern = makePattern(siteswap, beatTime, holdTime);
+
+    juggle(scene, pattern);
 
     double dt = 1 / STEPS_PER_SEC;
     double fps = INITIAL_FPS;

@@ -23,7 +23,7 @@ struct Scene
 
     void setG(const Vec2d& g);
 
-    int addBall(double rad, const Color& col);
+    int addBall(double rad, const Color& col, const Vec2d& pos);
 
     void addThrowCatch(int id, double throwTime, const Vec2d& throwPos, double catchTime, const Vec2d& catchPos);
 

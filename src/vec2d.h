@@ -41,6 +41,8 @@ struct Vec2d
     double x, y;
 };
 
+bool operator==(const Vec2d& u, const Vec2d& v);
+bool operator!=(const Vec2d& u, const Vec2d& v);
 Vec2d operator+(const Vec2d& u);
 Vec2d operator-(const Vec2d& u);
 Vec2d operator+(const Vec2d& u, const Vec2d& v);
